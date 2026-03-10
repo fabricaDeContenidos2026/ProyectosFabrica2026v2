@@ -8,15 +8,15 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-
+   
 </head>
 <body>
 
 <header>
     <img src="img/logo.png" alt="Logo CUN" />
     <div class="header-links">
-        <a href="https://carnet.cun.edu.co/#/inicio"><i class="fa-solid fa-id-card"></i> Estudiantes</a>
-        <a href="https://carnet.cun.edu.co/#/inicio"><i class="fa-solid fa-people-group"></i> Colaboradores</a>
+        <a href="https://carnet.cun.edu.co/#/inicio" target="_blank"><i class="fa-solid fa-id-card"></i> Estudiantes</a>
+        <a href="https://carnet.cun.edu.co/#/inicio" target="_blank"><i class="fa-solid fa-people-group"></i> Colaboradores</a>
     </div>
 </header>
 
@@ -33,19 +33,19 @@
         <div id="listaProyectos"></div>
 
         <span class="categoria-label">Productos Educativos</span>
-        <div class="proyecto-item" onclick="cargarUrl('https://online.fliphtml5.com/dkmsl/rrpw/')">
+        <div class="proyecto-item" onclick="cargarUrl('https://online.fliphtml5.com/dkmsl/rrpw/', 'Revista')">
             <i class="fa-solid fa-book-open"></i> Revista Diseño Gráfico
         </div>
-        <div class="proyecto-item sub-item" onclick="cargarUrl('https://online.fliphtml5.com/dkmsl/cvjz/')">
+        <div class="proyecto-item sub-item" onclick="cargarUrl('https://online.fliphtml5.com/dkmsl/cvjz/', 'Glosario')">
             <i class="fa-solid fa-circle-info"></i> Glosario
         </div>
-        <div class="proyecto-item sub-item" onclick="cargarUrl('https://embed.figma.com/proto/RueRB8Bfa0kQbWJWDuuHXT/Sin-t%C3%ADtulo?node-id=1-2&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&embed-host=share')">
+        <div class="proyecto-item sub-item" onclick="cargarUrl('https://embed.figma.com/proto/RueRB8Bfa0kQbWJWDuuHXT/Sin-t%C3%ADtulo?node-id=1-2&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&embed-host=share', 'Fichas')">
             <i class="fa-solid fa-file-invoice"></i> Fichas
         </div>
     </div>
 </div>
 
-<div class="iframe-container">
+<div class="iframe-container" id="mainContainer">
     <div id="welcome-overlay">
         <img src="img/logo.png" class="static-logo" alt="CUN">
         <div class="text-hint">Selecciona un proyecto para comenzar</div>
@@ -64,10 +64,9 @@
 </footer>
 
 <script>
-// Lista unificada bajo la misma categoría de "Contenido"
 const proyectos = [
     { nombre: "Fábrica de Contenido", url: "https://view.genially.com/6970da8da2ef09cea89fb3a8" },
-    { nombre: "CPlay", url: "https://cplay.cun.edu.co/" },
+    { nombre: "CPlay", url: "https://embed.figma.com/proto/jFyBWV98C4BeH5V0mRnrZN/CPLAY---Archivo-parcial-guardado-6-3-2026?node-id=18-2&scaling=contain&content-scaling=fixed&page-id=0%3A1&embed-host=share" },
     { nombre: "Bitácora", url: "https://view.genially.com/6972328f0508658631ae9ff3" },
     { nombre: "Prácticas", url: "https://view.genially.com/697bd198faf51c6b1c542400/interactive-content" },
     { nombre: "Interfax CUN-ULIM", url: "https://interfax-cun-ulim.vercel.app/" },
@@ -78,34 +77,48 @@ const lista = document.getElementById("listaProyectos");
 const visor = document.getElementById("visorFrame");
 const loader = document.getElementById("loader-overlay");
 const welcome = document.getElementById("welcome-overlay");
+const container = document.getElementById("mainContainer");
 
+// Cargar la lista dinámicamente
 proyectos.forEach((p) => {
     const item = document.createElement("div");
     item.className = "proyecto-item";
     item.innerHTML = `<i class="fa-solid fa-folder-open" style="color:#84BD00;"></i> ${p.nombre}`;
-    item.onclick = () => cargarUrl(p.url);
+    item.onclick = () => cargarUrl(p.url, p.nombre);
     lista.appendChild(item);
 });
 
-function cargarUrl(url) {
+function cargarUrl(url, nombre) {
     cerrarModal();
     welcome.style.display = "none";
     loader.style.display = "flex";
     visor.style.opacity = "0";
 
+    // Ajuste de tamaño específico
+    if (nombre === "CPlay") {
+        container.style.aspectRatio = "16 / 10"; // Figma suele necesitar un poco más de alto
+    } else {
+        container.style.aspectRatio = "16 / 9";
+    }
+
+    // Tiempo de carga simulado para efectos visuales
     setTimeout(() => {
         visor.src = url;
-        setTimeout(() => {
+        visor.onload = () => {
             loader.style.display = "none";
             visor.style.opacity = "1";
-        }, 500); 
-    }, 3000); 
+        };
+    }, 1500); 
 }
 
 function abrirModal() { document.getElementById("modalProyectos").style.display = "flex"; }
 function cerrarModal() { document.getElementById("modalProyectos").style.display = "none"; }
 
-window.onclick = (e) => { if (e.target.className === 'modal') cerrarModal(); };
+// Cerrar al hacer clic fuera del modal
+window.onclick = (e) => {
+    const modal = document.getElementById("modalProyectos");
+    if (e.target === modal) cerrarModal();
+};
 </script>
 
 </body>
